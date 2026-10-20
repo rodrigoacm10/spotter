@@ -1,0 +1,56 @@
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+addopts = "--strict-markers -ra --cov=routing --cov-fail-under=90"
+markers = [
+    "unit: Isolated fast unit tests for domain logic, entities, serializers, and helpers",
+    "integration: Integration tests for external providers (OSRM, Open-Meteo, Nominatim) and DRF Views",
+    "e2e: End-to-end API scenario tests verifying contracts and full flow",
+    "external: Tests requiring active external network connectivity",
+]
+
+[tool.coverage.run]
+source = ["routing"]
+omit = [
+    "routing/migrations/*",
+    "routing/admin.py",
+    "routing/apps.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+fail_under = 90
+show_missing = true
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+]
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+exclude = [
+    "^venv/",
+    "^\\.venv/",
+]
