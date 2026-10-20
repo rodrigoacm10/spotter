@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useCallback } from 'react'
 import {
   Box,
   Alert,
@@ -17,7 +17,7 @@ import NavigationIcon from '@mui/icons-material/Navigation'
 
 import { Header, RiskLegend } from '@/shared'
 import type { AnalyzedRoute, CheckpointData, AnalyzeTripParams } from '@/shared/types'
-import { RouteForm, RouteList, DEMO_PRESETS, useTripAnalysis } from '@/features/trip-planning'
+import { RouteForm, RouteList, useTripAnalysis } from '@/features/trip-planning'
 import { RouteMap } from '@/features/route-map'
 import { WeatherHeatmapSlider, type HeatmapMetric } from '@/features/weather-timeline'
 import { CheckpointDetailsModal } from '@/features/checkpoints'
@@ -68,22 +68,7 @@ export const App: React.FC = () => {
     [analyzeTrip]
   )
 
-  // Initial load: populate with default Chicago -> Indianapolis demo route
-  useEffect(() => {
-    const defaultPreset = DEMO_PRESETS[0]
-    const timer = setTimeout(() => {
-      handleAnalyzeTrip({
-        origin_lat: defaultPreset.originLat,
-        origin_lon: defaultPreset.originLon,
-        dest_lat: defaultPreset.destLat,
-        dest_lon: defaultPreset.destLon,
-        departure_time: new Date().toISOString(),
-        load_weight_lbs: defaultPreset.loadWeightLbs,
-        sample_interval_miles: defaultPreset.sampleInterval,
-      })
-    }, 0)
-    return () => clearTimeout(timer)
-  }, [handleAnalyzeTrip])
+
 
   const activeRoute = tripData?.routes.find((route) => route.id === selectedRouteId) || tripData?.routes[0] || null
 
@@ -327,39 +312,43 @@ export const App: React.FC = () => {
             destination={tripData?.destination}
           />
 
-          <Box
-            sx={{
-              position: 'absolute',
-              top: hasTopLeftButton ? 68 : 16,
-              left: 16,
-              zIndex: 9,
-            }}
-          >
-            <RiskLegend />
-          </Box>
+          {tripData && tripData.routes.length > 0 && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: hasTopLeftButton ? 68 : 16,
+                left: 16,
+                zIndex: 9,
+              }}
+            >
+              <RiskLegend />
+            </Box>
+          )}
 
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: { xs: 12, sm: 20 },
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: { xs: 'calc(100% - 24px)', sm: '92%', md: '88%' },
-              maxWidth: 780,
-              zIndex: 10,
-            }}
-          >
-            <WeatherHeatmapSlider
-              currentHour={currentHour}
-              onChangeHour={setCurrentHour}
-              metric={heatmapMetric}
-              onChangeMetric={(selectedMetric) => setHeatmapMetric(selectedMetric)}
-              showHeatmap={showHeatmap}
-              onToggleShowHeatmap={(shouldShowHeatmap) => setShowHeatmap(shouldShowHeatmap)}
-              departureTime={tripData?.departure_time || new Date().toISOString()}
-              tripDurationHours={activeRoute?.duration_hours}
-            />
-          </Box>
+          {activeRoute && (
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: { xs: 12, sm: 20 },
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: { xs: 'calc(100% - 24px)', sm: '92%', md: '88%' },
+                maxWidth: 780,
+                zIndex: 10,
+              }}
+            >
+              <WeatherHeatmapSlider
+                currentHour={currentHour}
+                onChangeHour={setCurrentHour}
+                metric={heatmapMetric}
+                onChangeMetric={(selectedMetric) => setHeatmapMetric(selectedMetric)}
+                showHeatmap={showHeatmap}
+                onToggleShowHeatmap={(shouldShowHeatmap) => setShowHeatmap(shouldShowHeatmap)}
+                departureTime={tripData?.departure_time || new Date().toISOString()}
+                tripDurationHours={activeRoute.duration_hours}
+              />
+            </Box>
+          )}
         </Box>
       </Box>
 

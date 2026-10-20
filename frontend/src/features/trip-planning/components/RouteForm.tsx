@@ -35,18 +35,6 @@ export interface RouteFormProps {
   initialValues?: Partial<AnalyzeTripParams>
 }
 
-const DEFAULT_ORIGIN: LocationOption = {
-  display_name: 'Chicago, Illinois, USA',
-  latitude: 41.8781,
-  longitude: -87.6298,
-}
-
-const DEFAULT_DEST: LocationOption = {
-  display_name: 'Indianapolis, Indiana, USA',
-  latitude: 39.7684,
-  longitude: -86.1581,
-}
-
 export const RouteForm: React.FC<RouteFormProps> = ({
   onAnalyze,
   isLoading,
@@ -64,16 +52,16 @@ export const RouteForm: React.FC<RouteFormProps> = ({
   } = useForm<RouteFormData>({
     resolver: zodResolver(routeFormSchema) as Resolver<RouteFormData>,
     defaultValues: {
-      origin: DEFAULT_ORIGIN,
-      dest: DEFAULT_DEST,
+      origin: null,
+      dest: null,
       departureTime: dayjs().add(1, 'hour'),
       weight: 35000,
       interval: 25,
     },
   })
 
-  const origin = useLocationSearch('Chicago, IL', DEFAULT_ORIGIN)
-  const dest = useLocationSearch('Indianapolis, IN', DEFAULT_DEST)
+  const origin = useLocationSearch('', null)
+  const dest = useLocationSearch('', null)
 
   const watchedOrigin = useWatch({ control, name: 'origin' })
   const watchedDest = useWatch({ control, name: 'dest' })
